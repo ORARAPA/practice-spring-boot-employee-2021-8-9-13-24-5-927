@@ -110,4 +110,23 @@ public class CompanyIntegrationTest {
                 .andExpect(jsonPath("$[2].id").doesNotExist());
     }
 
+    @Test
+    void should_create_when_addCompany_given_company_information() throws Exception {
+        //given
+        String employee = "{\"id\":1,\n" +
+                "    \"companyName\": \"Honeybee\",\n" +
+                "    \"employeesList\":[]\n" +
+                "}";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/companies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employee))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.companyName").value("Honeybee"))
+                .andExpect(jsonPath("$.employees").isEmpty());
+
+
+    }
+
 }
