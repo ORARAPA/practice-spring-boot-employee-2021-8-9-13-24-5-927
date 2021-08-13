@@ -48,14 +48,15 @@ public class CompanyController {
     }
 
     @GetMapping(params = {"pageIndex", "pageSize"})
-    public List<Company> getCompaniesByPagination(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
-        return companyService.getCompaniesByPagination(pageIndex, pageSize);
+    public List<CompanyResponse> getCompaniesByPagination(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
+        return companyMapper.toResponse(companyService.getCompaniesByPagination(pageIndex, pageSize));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Company addCompany(@RequestBody CompanyRequest companyInfo){
-        return companyService.addCompany(companyMapper.toEntity(companyInfo));
+    public CompanyResponse addCompany(@RequestBody CompanyRequest companyInfo){
+        final Company company = companyService.addCompany(companyMapper.toEntity(companyInfo));
+        return companyMapper.toResponse(company);
     }
 
     @PutMapping(path = "/{companyId}")
@@ -65,8 +66,8 @@ public class CompanyController {
     }
 
     @DeleteMapping(path = "/{companyId}")
-    public Company deleteCompany(@PathVariable Integer companyId){
-        return companyService.removeCompany(companyId);
+    public CompanyResponse deleteCompany(@PathVariable Integer companyId){
+        return companyMapper.toResponse(companyService.removeCompany(companyId));
     }
 
 }
