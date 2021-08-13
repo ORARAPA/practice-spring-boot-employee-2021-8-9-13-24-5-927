@@ -50,8 +50,8 @@ public class EmployeesController {
     }
 
     @GetMapping(params = {"minAge", "maxAge"})
-    public List<Employee> getEmployeesByAgeRange(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
-        return employeeService.getEmployeesByAgeRange(minAge, maxAge);
+    public List<EmployeeResponse> getEmployeesByAgeRange(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
+        return employeeMapper.toResponse(employeeService.getEmployeesByAgeRange(minAge, maxAge));
     }
 
     @PutMapping(path = "/{employeeId}")
