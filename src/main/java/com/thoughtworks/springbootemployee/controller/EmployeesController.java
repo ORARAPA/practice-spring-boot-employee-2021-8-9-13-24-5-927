@@ -26,11 +26,6 @@ public class EmployeesController {
         return employeeService.getAllEmployees();
     }
 
-//    @GetMapping(path = "/{employeeId}")
-//    public Employee findById(@PathVariable Integer employeeId){
-//        return employeeService.findById(employeeId);
-//    }
-
     @GetMapping(path = "/{employeeId}")
     public EmployeeResponse findById(@PathVariable Integer employeeId){
         return employeeMapper.toResponse(employeeService.findById(employeeId));
@@ -66,8 +61,8 @@ public class EmployeesController {
     }
 
     @DeleteMapping(path = "/{employeeId}")
-    public Employee deleteEmployee(@PathVariable Integer employeeId){
-        return employeeService.removeEmployee(employeeId);
+    public EmployeeResponse deleteEmployee(@PathVariable Integer employeeId){
+        return employeeMapper.toResponse(employeeService.removeEmployee(employeeId));
     }
 
 }
