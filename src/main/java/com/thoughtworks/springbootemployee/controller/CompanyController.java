@@ -29,8 +29,8 @@ public class CompanyController {
     }
 
     @GetMapping
-    public List<Company> getAllCompanies(){
-        return companyService.getAllCompanies();
+    public List<CompanyResponse> getAllCompanies(){
+        return companyMapper.toResponse(companyService.getAllCompanies());
     }
 
 
