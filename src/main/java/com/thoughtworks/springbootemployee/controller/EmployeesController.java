@@ -22,8 +22,8 @@ public class EmployeesController {
     EmployeeMapper employeeMapper;
 
     @GetMapping
-    public List<Employee> getAllEmployees(){
-        return employeeService.getAllEmployees();
+    public List<EmployeeResponse> getAllEmployees(){
+        return employeeMapper.toResponse(employeeService.getAllEmployees());
     }
 
     @GetMapping(path = "/{employeeId}")
