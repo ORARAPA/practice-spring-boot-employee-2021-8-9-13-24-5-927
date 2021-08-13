@@ -90,6 +90,24 @@ public class CompanyIntegrationTest {
                 .andExpect(jsonPath("$.employees").isEmpty());
     }
 
+    @Test
+    void should_return_two_company_per_list_when_getListByPagination_given_pageIndex_is_1_and_pageSize_is_2() throws Exception {
+        //given
+        companyRepository.save(new Company(1,"MIS", null));
+        companyRepository.save(new Company(2,"EDI", null));
+        companyRepository.save(new Company(3,"LODS", null));
+        companyRepository.save(new Company(4,"IRIS", null));
 
+        //when
+        //then
+        int pageIndex = 1 ,pageSize = 2;
+        mockMvc.perform(MockMvcRequestBuilders.get("/companies?pageIndex={pageIndex}&pageSize={pageSize}",pageIndex,pageSize))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].companyName").value("MIS"))
+                .andExpect(jsonPath("$[0].employees").isEmpty())
+                .andExpect(jsonPath("$[1].companyName").value("EDI"))
+                .andExpect(jsonPath("$[1].employees").isEmpty())
+                .andExpect(jsonPath("$[2].id").doesNotExist());
+    }
 
 }
