@@ -35,6 +35,7 @@ public class CompanyIntegrationTest {
     @AfterEach
     void tearDown(){
         companyRepository.deleteAll();
+        employeeRepository.deleteAll();
     }
 
 
@@ -69,7 +70,6 @@ public class CompanyIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/companies/{companyId}/employees",savedCompany.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(3)))
-                .andExpect(jsonPath("$[0].id").isNumber())
                 .andExpect(jsonPath("$[0].name").value("Red"))
                 .andExpect(jsonPath("$[1].name").value("Sharlz"))
                 .andExpect(jsonPath("$[2].name").value("Ken"))
@@ -111,23 +111,6 @@ public class CompanyIntegrationTest {
     }
 
     @Test
-    void should_create_when_addCompany_given_company_information() throws Exception {
-        //given
-        String employee = "{\"id\":1,\n" +
-                "    \"companyName\": \"Honeybee\",\n" +
-                "    \"employeesList\":[]\n" +
-                "}";
-
-        //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/companies")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(employee))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.companyName").value("Honeybee"))
-                .andExpect(jsonPath("$.employees").isEmpty());
-    }
-
-    @Test
     void should_update_when_updateCompany_given_company_information() throws Exception {
         //given
         final Company company = new Company(1,"MIS",null);
@@ -157,6 +140,24 @@ public class CompanyIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_create_when_addCompany_given_company_information() throws Exception {
+        //given
+        String company = "{\"id\":1,\n" +
+                "    \"companyName\": \"MIS-2\",\n" +
+                "    \"employees\":[]\n" +
+                "}";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/companies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(company))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.companyName").value("MIS-2"))
+                .andExpect(jsonPath("$.employees").isEmpty());
+
     }
 
 
