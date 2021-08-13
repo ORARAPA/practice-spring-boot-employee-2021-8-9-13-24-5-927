@@ -144,4 +144,20 @@ public class CompanyIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.companyName").value("Honeybee"));
     }
+
+    @Test
+    void should_remove_when_deleteCompany_given_company_id() throws Exception {
+        //given
+        final Company company = new Company(1,"MIS",null);
+        Company savedCompany = companyRepository.save(company);
+
+        //when
+        int id = savedCompany.getId();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/companies/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+
 }
