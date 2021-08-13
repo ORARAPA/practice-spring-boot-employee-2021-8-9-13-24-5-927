@@ -32,13 +32,13 @@ public class EmployeesController {
     }
 
     @GetMapping(params = {"gender"})
-    public List<Employee> findByGender(@RequestParam("gender") String employeeGender){
-        return employeeService.findByGender(employeeGender);
+    public List<EmployeeResponse> findByGender(@RequestParam("gender") String employeeGender){
+        return employeeMapper.toResponse(employeeService.findByGender(employeeGender));
     }
 
     @GetMapping(params = {"pageIndex", "pageSize"})
-    public List<Employee> getEmployeesByPagination(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
-        return employeeService.getEmployeesByPagination(pageIndex, pageSize);
+    public List<EmployeeResponse> getEmployeesByPagination(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
+        return employeeMapper.toResponse(employeeService.getEmployeesByPagination(pageIndex, pageSize));
     }
 
 
