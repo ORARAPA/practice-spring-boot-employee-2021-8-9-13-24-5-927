@@ -42,7 +42,6 @@ public class EmployeeIntegrationTest {
         //when
         mockMvc.perform(MockMvcRequestBuilders.get("/employees"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
                 .andExpect(jsonPath("$[0].name").value("Lara"))
                 .andExpect(jsonPath("$[0].age").value(22))
                 .andExpect(jsonPath("$[0].gender").value("female"))
@@ -136,12 +135,10 @@ public class EmployeeIntegrationTest {
         String gender = "female";
         mockMvc.perform(MockMvcRequestBuilders.get("/employees?gender={gender}",gender))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
                 .andExpect(jsonPath("$[0].name").value("Lara"))
                 .andExpect(jsonPath("$[0].age").value(20))
                 .andExpect(jsonPath("$[0].gender").value("female"))
                 .andExpect(jsonPath("$[0].salary").value(1000))
-                .andExpect(jsonPath("$[1].id").isNumber())
                 .andExpect(jsonPath("$[1].name").value("Ephree"))
                 .andExpect(jsonPath("$[1].age").value(20))
                 .andExpect(jsonPath("$[1].gender").value("female"))
@@ -164,17 +161,15 @@ public class EmployeeIntegrationTest {
         int pageIndex = 1 ,pageSize = 2;
         mockMvc.perform(MockMvcRequestBuilders.get("/employees?pageIndex={pageIndex}&pageSize={pageSize}",pageIndex,pageSize))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
                 .andExpect(jsonPath("$[0].name").value("Lara"))
                 .andExpect(jsonPath("$[0].age").value(20))
                 .andExpect(jsonPath("$[0].gender").value("female"))
                 .andExpect(jsonPath("$[0].salary").value(1000))
-                .andExpect(jsonPath("$[1].id").isNumber())
                 .andExpect(jsonPath("$[1].name").value("Jerz"))
                 .andExpect(jsonPath("$[1].age").value(20))
                 .andExpect(jsonPath("$[1].gender").value("male"))
                 .andExpect(jsonPath("$[1].salary").value(1000))
-                .andExpect(jsonPath("$[2].id").doesNotExist());
+                .andExpect(jsonPath("$[2].name").doesNotExist());
     }
 
 }
