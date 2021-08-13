@@ -46,16 +46,12 @@ public class EmployeesController {
         return employeeService.getEmployeesByPagination(pageIndex, pageSize);
     }
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public Employee addEmployee(@RequestBody Employee employeeInfo){
-//        return employeeService.addEmployee(employeeInfo);
-//    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee addEmployee(@RequestBody EmployeeRequest employeeInfo){
-        return employeeService.addEmployee(employeeMapper.toEntity(employeeInfo));
+    public EmployeeResponse addEmployee(@RequestBody EmployeeRequest employeeInfo){
+        final Employee employee = employeeService.addEmployee(employeeMapper.toEntity(employeeInfo));
+        return employeeMapper.toResponse(employee);
     }
 
     @GetMapping(params = {"minAge", "maxAge"})
@@ -63,14 +59,10 @@ public class EmployeesController {
         return employeeService.getEmployeesByAgeRange(minAge, maxAge);
     }
 
-//    @PutMapping(path = "/{employeeId}")
-//    public Employee updateEmployee(@PathVariable Integer employeeId, @RequestBody Employee employeeInfo){
-//        return employeeService.updateEmployee(employeeId, employeeInfo);
-//    }
-
     @PutMapping(path = "/{employeeId}")
-    public Employee updateEmployee(@PathVariable Integer employeeId, @RequestBody EmployeeRequest employeeInfo){
-        return employeeService.updateEmployee(employeeId, employeeMapper.toEntity(employeeInfo));
+    public EmployeeResponse updateEmployee(@PathVariable Integer employeeId, @RequestBody EmployeeRequest employeeInfo){
+        final Employee employee = employeeService.updateEmployee(employeeId, employeeMapper.toEntity(employeeInfo));
+        return employeeMapper.toResponse(employee);
     }
 
     @DeleteMapping(path = "/{employeeId}")
