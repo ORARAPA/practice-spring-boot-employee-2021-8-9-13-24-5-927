@@ -42,18 +42,17 @@ public class CompanyService {
     }
 
     public Company updateCompany(Integer companyId, Company companyInfo) {
-        Company updateCompany = companyRepository
-                                .findById(companyId)
-                                .map(company -> updateCompanyInfo(company, companyInfo))
-                                .get();
-        return companyRepository.save(updateCompany);
+        Company company = companyRepository.findById(companyId)
+                .map(oldCompany -> updateCompanyInfo(oldCompany,companyInfo))
+                .get();
+        return companyRepository.save(company);
     }
 
     private Company updateCompanyInfo(Company company, Company companyInfo) {
         if (companyInfo.getCompanyName() != null){
             company.setCompanyName(companyInfo.getCompanyName());
         }
-        if (!companyInfo.getEmployees().isEmpty() && companyInfo.getEmployees() != null){
+        if (companyInfo.getEmployees() != null){
             company.setEmployees(companyInfo.getEmployees());
         }
         return company;
