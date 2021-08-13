@@ -2,6 +2,7 @@ package com.thoughtworks.springbootemployee.integration;
 
 import com.thoughtworks.springbootemployee.entity.Employee;
 import com.thoughtworks.springbootemployee.repository.EmployeeRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,41 +28,35 @@ public class EmployeeIntegrationTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private List<Employee> testEmployees;
-
-    @BeforeEach
-    public void setup(){
-        testEmployees = Arrays.asList
-                        (new Employee(2,"Kitz",22,"male",10000),
-                        (new Employee(3,"Lara",21,"female",10000)),
-                        (new Employee(34,"Robert",23,"male",10000)),
-                        (new Employee(65,"Angelo",21,"male",10000)),
-                        (new Employee(66,"Kyle",23,"male",10000)),
-                        (new Employee(67,"Jesse",25,"male",10000)),
-                        (new Employee(97,"David",25,"male",10000))
-                );
+    @AfterEach
+    void tearDown(){
+        employeeRepository.deleteAll();
     }
 
     @Test
     void should_return_all_employees_when_getAllEmployees() throws Exception {
+        //given
+        final Employee employee = new Employee(1,"Lara",22,"female",1000);
+        employeeRepository.save(employee);
+
         //when
         mockMvc.perform(MockMvcRequestBuilders.get("/employees"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").isNumber())
-                .andExpect(jsonPath("$[0].name").value("Kitz"))
+                .andExpect(jsonPath("$[0].name").value("Lara"))
                 .andExpect(jsonPath("$[0].age").value(22))
-                .andExpect(jsonPath("$[0].gender").value("male"))
-                .andExpect(jsonPath("$[0].salary").value(10000));
+                .andExpect(jsonPath("$[0].gender").value("female"))
+                .andExpect(jsonPath("$[0].salary").value(1000));
     }
 
     @Test
     void should_create_when_addEmployee_given_employee_information() throws Exception {
         //given
         String employee = "{\n" +
-                "    \"id\": 98,\n" +
-                "    \"name\": \"Joanna\",\n" +
-                "    \"age\": 25,\n" +
-                "    \"gender\": \"female\",\n" +
+                "    \"id\": 1,\n" +
+                "    \"name\": \"Bobber\",\n" +
+                "    \"age\": 23,\n" +
+                "    \"gender\": \"male\",\n" +
                 "    \"salary\": 1000\n" +
                 "}";
 
@@ -70,8 +65,8 @@ public class EmployeeIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(employee))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Joanna"))
-                .andExpect(jsonPath("$.gender").value("female"))
+                .andExpect(jsonPath("$.name").value("Bobber"))
+                .andExpect(jsonPath("$.gender").value("male"))
                 .andExpect(jsonPath("$.salary").value("1000"));
 
     }
@@ -79,10 +74,11 @@ public class EmployeeIntegrationTest {
     @Test
     void should_update_when_updateEmployee_given_employee_information() throws Exception {
         //given
-        final Employee employee = new Employee(95, "Joanna", 25, "female", 1000);
+        final Employee employee = new Employee(1,"Lara",20,"female",1000);
         final Employee savedEmployee = employeeRepository.save(employee);
         String newEmployeeInfo = "{\n" +
-                "    \"age\": 22\n" +
+                "    \"name\": \"Angelo\",\n" +
+                "    \"salary\": 10000\n" +
                 "}";
 
         //when
@@ -91,13 +87,14 @@ public class EmployeeIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newEmployeeInfo))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value("22"));
+                .andExpect(jsonPath("$.name").value("Angelo"))
+                .andExpect(jsonPath("$.salary").value(10000));
     }
 
     @Test
     void should_remove_when_removeEmployee_given_employee_id() throws Exception {
         //given
-        final Employee employee = new Employee(95, "Joanna", 25, "female", 1000);
+        final Employee employee = new Employee(1,"Lara",20,"female",1000);
         final Employee savedEmployee = employeeRepository.save(employee);
 
         //when
@@ -110,34 +107,74 @@ public class EmployeeIntegrationTest {
 
     @Test
     void should_return_employee_when_findById_given_employee_id() throws Exception {
-        int id = 2;
-        mockMvc.perform(MockMvcRequestBuilders.get("/employees/{id}", id))
+        //given
+        final Employee employee = new Employee(1,"Lara",20,"female",1000);
+        final Employee savedEmployee = employeeRepository.save(employee);
+
+        Integer id = savedEmployee.getId();
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees/{id}",id))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.name").value("Kitz"))
-                .andExpect(jsonPath("$.age").value(22))
-                .andExpect(jsonPath("$.gender").value("male"))
-                .andExpect(jsonPath("$.salary").value(10000));
+                .andExpect(jsonPath("$.name").value("Lara"))
+                .andExpect(jsonPath("$.age").value(20))
+                .andExpect(jsonPath("$.gender").value("female"))
+                .andExpect(jsonPath("$.salary").value(1000));
     }
 
     @Test
     void should_return_employees_when_findByGender_given_employee_gender() throws Exception {
-        String gender = "male";
-        mockMvc.perform(MockMvcRequestBuilders.get("/employees").param("gender", gender)
-                .accept(MediaType.APPLICATION_JSON))
+        //given
+        final Employee employee1 = new Employee(1,"Lara",20,"female",1000);
+        employeeRepository.save(employee1);
+        final Employee employee2 = new Employee(2,"Jerz",20,"male",1000);
+        employeeRepository.save(employee2);
+        final Employee employee3 = new Employee(3,"Ephree",20,"female",1000);
+        employeeRepository.save(employee3);
+
+
+        //when
+        //then
+        String gender = "female";
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees?gender={gender}",gender))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(7)));
+                .andExpect(jsonPath("$[0].id").isNumber())
+                .andExpect(jsonPath("$[0].name").value("Lara"))
+                .andExpect(jsonPath("$[0].age").value(20))
+                .andExpect(jsonPath("$[0].gender").value("female"))
+                .andExpect(jsonPath("$[0].salary").value(1000))
+                .andExpect(jsonPath("$[1].id").isNumber())
+                .andExpect(jsonPath("$[1].name").value("Ephree"))
+                .andExpect(jsonPath("$[1].age").value(20))
+                .andExpect(jsonPath("$[1].gender").value("female"))
+                .andExpect(jsonPath("$[1].salary").value(1000));
     }
 
     @Test
     void should_return_three_employee_per_list_when_getListByPagination_given_pageIndex_is_1_and_pageSize_is_3() throws Exception {
-        int pageSize = 3;
-        int pageIndex = 1;
-        mockMvc.perform(MockMvcRequestBuilders.get("/employees")
-                .param("pageIndex", String.valueOf(pageIndex)).param("pageSize", String.valueOf(pageSize))
-                .accept(MediaType.APPLICATION_JSON))
+        //given
+        final Employee employee1 = new Employee(1,"Lara",20,"female",1000);
+        employeeRepository.save(employee1);
+        final Employee employee2 = new Employee(2,"Jerz",20,"male",1000);
+        employeeRepository.save(employee2);
+        final Employee employee3 = new Employee(3,"Ephree",20,"female",1000);
+        employeeRepository.save(employee3);
+
+
+        //when
+        //then
+        int pageIndex = 1 ,pageSize = 2;
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees?pageIndex={pageIndex}&pageSize={pageSize}",pageIndex,pageSize))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(3)));
+                .andExpect(jsonPath("$[0].id").isNumber())
+                .andExpect(jsonPath("$[0].name").value("Lara"))
+                .andExpect(jsonPath("$[0].age").value(20))
+                .andExpect(jsonPath("$[0].gender").value("female"))
+                .andExpect(jsonPath("$[0].salary").value(1000))
+                .andExpect(jsonPath("$[1].id").isNumber())
+                .andExpect(jsonPath("$[1].name").value("Jerz"))
+                .andExpect(jsonPath("$[1].age").value(20))
+                .andExpect(jsonPath("$[1].gender").value("male"))
+                .andExpect(jsonPath("$[1].salary").value(1000))
+                .andExpect(jsonPath("$[2].id").doesNotExist());
     }
 
 }
