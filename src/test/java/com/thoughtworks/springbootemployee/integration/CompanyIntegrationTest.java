@@ -74,8 +74,22 @@ public class CompanyIntegrationTest {
                 .andExpect(jsonPath("$[1].name").value("Sharlz"))
                 .andExpect(jsonPath("$[2].name").value("Ken"))
                 .andExpect(jsonPath("$[3].name").doesNotExist());
-
-
     }
+
+
+    @Test
+    void should_return_company_when_findById_given_company_id() throws Exception {
+        //given
+        final Company company = new Company(1,"MIS",null);
+        Company savedCompany = companyRepository.save(company);
+
+        Integer id = savedCompany.getId();
+        mockMvc.perform(MockMvcRequestBuilders.get("/companies/{id}",id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.companyName").value("MIS"))
+                .andExpect(jsonPath("$.employees").isEmpty());
+    }
+
+
 
 }
