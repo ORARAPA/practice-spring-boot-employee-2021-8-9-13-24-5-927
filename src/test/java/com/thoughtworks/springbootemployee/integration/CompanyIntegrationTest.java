@@ -125,8 +125,23 @@ public class CompanyIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.companyName").value("Honeybee"))
                 .andExpect(jsonPath("$.employees").isEmpty());
-
-
     }
 
+    @Test
+    void should_update_when_updateCompany_given_company_information() throws Exception {
+        //given
+        final Company company = new Company(1,"MIS",null);
+        Company savedCompany = companyRepository.save(company);
+        String companyInfo = "{\n" +
+                "    \"companyName\":\"Honeybee\"\n" +
+                "}";
+
+        //when
+        int id = savedCompany.getId();
+        mockMvc.perform(MockMvcRequestBuilders.put("/companies/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(companyInfo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.companyName").value("Honeybee"));
+    }
 }
