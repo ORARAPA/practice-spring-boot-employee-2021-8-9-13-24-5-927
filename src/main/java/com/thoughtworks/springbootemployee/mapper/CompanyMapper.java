@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CompanyMapper {
@@ -28,12 +29,6 @@ public class CompanyMapper {
     }
 
     public List<CompanyResponse> toResponse(List<Company> companies){
-        List<CompanyResponse> companyResponses = new ArrayList<>();
-        companies.forEach(currentCompany -> {
-            CompanyResponse companyResponse = new CompanyResponse();
-            BeanUtils.copyProperties(currentCompany, companyResponse);
-            companyResponses.add(companyResponse);
-        });
-        return companyResponses;
+        return companies.stream().map(this::toResponse).collect(Collectors.toList());
     }
 }
