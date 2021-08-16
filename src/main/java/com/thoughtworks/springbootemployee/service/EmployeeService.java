@@ -29,7 +29,7 @@ public class EmployeeService {
 
     public Employee findById(Integer employeeId) {
         return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeeNotFoundException());
+                .orElseThrow(EmployeeNotFoundException::new);
     }
 
     public List<Employee> findByGender(String employeeGender) {
@@ -43,7 +43,7 @@ public class EmployeeService {
     public Employee removeEmployee(Integer employeeId) {
         Optional<Employee> removeEmployee = employeeRepository.findById(employeeId);
         employeeRepository.deleteById(employeeId);
-        return removeEmployee.orElse(null);
+        return removeEmployee.orElseThrow(EmployeeNotFoundException::new);
     }
 
     public Employee updateEmployee(Integer employeeId, Employee employeeInfo) {

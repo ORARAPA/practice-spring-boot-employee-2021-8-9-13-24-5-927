@@ -24,13 +24,13 @@ public class CompanyService {
     }
 
     public List<Employee> getAllEmployeesByCompanyId(Integer companyId) {
-        Company company = companyRepository.findById(companyId).orElse(null);
+        Company company = companyRepository.findById(companyId).orElseThrow(CompanyNotFoundException::new);
         return company.getEmployees();
     }
 
     public Company findById(Integer companyId) {
         return companyRepository.findById(companyId)
-                .orElseThrow(() -> new CompanyNotFoundException());
+                .orElseThrow(CompanyNotFoundException::new);
     }
 
     public List<Company> getCompaniesByPagination(Integer pageIndex, Integer pageSize) {
@@ -61,7 +61,7 @@ public class CompanyService {
     public Company removeCompany(Integer companyId) {
         Optional<Company> removeCompany = companyRepository.findById(companyId);
         companyRepository.deleteById(companyId);
-        return removeCompany.orElse(null);
+        return removeCompany.orElseThrow(CompanyNotFoundException::new);
     }
 
 }
