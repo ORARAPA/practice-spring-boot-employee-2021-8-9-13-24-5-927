@@ -43,8 +43,8 @@ public class CompanyService {
 
     public Company updateCompany(Integer companyId, Company companyInfo) {
         Company company = companyRepository.findById(companyId)
-                .map(oldCompany -> updateCompanyInfo(oldCompany,companyInfo))
-                .get();
+                .map(oldCompany -> updateCompanyInfo(oldCompany,companyInfo)).
+                orElseThrow(CompanyNotFoundException::new);
         return companyRepository.save(company);
     }
 
